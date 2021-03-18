@@ -8,9 +8,6 @@ Author URI: https://www.sylvain-chabaud.fr
 */
 
 
-
-
-
 if (!function_exists('wfu_after_upload_handler')) 
 {
 	// retrieves the attachment ID from the file URL
