@@ -41,6 +41,7 @@ if (!function_exists('wfu_after_upload_handler'))
 			$ImpressionUser  = "";
 			$ReliureUser  = "";
 			$nbReliureUser  = "";
+			$rectoVerso  = "";
 			$infosPrix = "";
 			
 			// ########
