@@ -94,11 +94,12 @@ if (!function_exists('wfu_after_upload_handler'))
 			$ImpressionUser  = $infosPdfTab[1];
 			$ReliureUser  = $infosPdfTab[2];
 			$nbReliureUser  = $infosPdfTab[3];
+			$rectoVerso  = $infosPdfTab[4];
 			
 			
-			// Pour les reliures "dos carré collé" : pas d'impression en dessous de 100 feuilles
+			// Pour les reliures "dos carré collé" : pas d'impression en dessous de 50 feuilles
 			$pasImpression = "";
-			if ( $ReliureUser=="Dos-carré-collé" && $nbPagesPDF<="100") $pasImpression = "Minimum 100 feuilles pour imprimer en Dos-carré-collé";
+			if ( $ReliureUser=="Dos-carré-collé" && $nbPagesPDF<="50") $pasImpression = "Minimum 50 feuilles pour imprimer en Dos-carré-collé";
 			
 			if ($pasImpression=="")
 			{
@@ -116,7 +117,7 @@ if (!function_exists('wfu_after_upload_handler'))
 					'Métal'           => ['1-20' => 2.10, '21-50' => 2.70, '51-100' => 3.10, '101-150' => 3.90, '151-200' => 4.40, '201Plus' => 5.70],
 					'Unibind'        => ['1-20' => 2.30, '21-50' => 2.90, '51-100' => 3.30, '101-150' => 4.10, '151-200' => 4.60, '201Plus' => 5.90],
 					'Thermocollé'     => ['1-20' => 3.30, '21-50' => 3.90, '51-100' => 4.30, '101-150' => 5.10, '151-200' => 5.60, '201Plus' => 9.90],
-					'Dos-carré-collé' => ['1-20' => 0.00, '21-50' => 0.00, '51-100' => 0.00, '101-150' => 7.00, '151-200' => 7.00, '201Plus' => 7.00]
+					'Dos-carré-collé' => ['1-20' => 0.00, '21-50' => 0.00, '51-100' => 7.00, '101-150' => 7.00, '151-200' => 7.00, '201Plus' => 7.00]
 				];
 				$impressionCouleur = [
 					'A4' => ['1-5' => 0.70, '6-10' => 0.60, '11-50' => 0.50, '51-150' => 0.40, '151-500' => 0.30, '501-1000' => 0.25, '1000Plus' => 0.20],
@@ -200,7 +201,7 @@ if (!function_exists('wfu_after_upload_handler'))
 				$custom_price = $infosPrixUnitaire;
 				$product = new WC_Product;
 				$product->set_name('IMPRESSION ' . $titrePDF);
-				$product->set_description('NomPdf : ' . $titrePDF . ',<br/>Format : ' . $FormatUser . ',<br/>Impression : ' . $ImpressionUser . ',<br/>Reliure : ' . $ReliureUser . ',<br/>nbPages : ' . $nbPagesPDF . ',<br/>nbReliures : ' . $nbReliureUser . ',<br/>Prix par reliure : ' . $custom_price . '€');
+				$product->set_description('NomPdf : ' . $titrePDF . ',<br/>Format : ' . $FormatUser . ',<br/>Impression : ' . $ImpressionUser . ',<br/>Reliure : ' . $ReliureUser . ',<br/>nbPages : ' . $nbPagesPDF . ',<br/>nbReliures : ' . $nbReliureUser . ',<br/>Recto-Verso : ' . $rectoVerso . ',<br/>Prix par reliure : ' . $custom_price . '€');
 				$product->set_regular_price($custom_price);
 				$visibility = 'hidden';
 				$product->set_catalog_visibility($visibility);
