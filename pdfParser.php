@@ -38,7 +38,7 @@ if (!function_exists('wfu_after_upload_handler'))
 			$ImpressionUser  = "";
 			$ReliureUser  = "";
 			$nbReliureUser  = "";
-			$rectoVerso  = "";
+			$rectoVerso  = "non";
 			$infosPrix = "";
 			
 			// ########
@@ -85,19 +85,38 @@ if (!function_exists('wfu_after_upload_handler'))
 			$infosPdfTab = array();
 			foreach ( $userDatas as $userData )
 			{
-				$infosDatas .= $userData["label"] . ' : ' . $userData["value"] . ' <br/>';
-				array_push($infosPdfTab, $userData["value"]);
+				$value = $userData["value"];
+				$label = $userData["label"];
+				if ($label == "Recto-Verso")
+				{
+					if ($value=="true")
+					{
+						$value = "Oui";
+					}
+					else
+					{
+						$value = "Non";
+					}
+				}
+				
+				$infosDatas .= $label . ' : ' . $value . ' <br/>';
+				array_push($infosPdfTab, $value);
 			}
 			$FormatUser  = $infosPdfTab[0];
 			$ImpressionUser  = $infosPdfTab[1];
 			$ReliureUser  = $infosPdfTab[2];
 			$nbReliureUser  = $infosPdfTab[3];
-			$rectoVerso  = $infosPdfTab[4];
+			if ($infosPdfTab[4])
+			{
+				$rectoVerso  = "Oui";
+			}
 			
 			
 			// Pour les reliures "dos carré collé" : pas d'impression en dessous de 50 feuilles
 			$pasImpression = "";
-			if ( $ReliureUser=="Dos-carré-collé" && $nbPagesPDF<="50") $pasImpression = "Minimum 50 feuilles pour imprimer en Dos-carré-collé";
+			if ( $ReliureUser=="Dos-carré-collé" && $nbPagesPDF<="250") {$pasImpression = "Minimum 250 feuilles pour imprimer avec une reliure en dos-carré-collé !";}
+			else if ( $ReliureUser=="Métal" && $nbPagesPDF<="120") {$pasImpression = "Minimum 120 feuilles pour imprimer avec une reliure en métal !";}
+			else if ( $ReliureUser=="Plastique" && $nbPagesPDF<="350") {$pasImpression = "Minimum 350 feuilles pour imprimer avec une reliure en plastique !";}
 			
 			if ($pasImpression=="")
 			{
@@ -204,9 +223,8 @@ if (!function_exists('wfu_after_upload_handler'))
 				$visibility = 'hidden';
 				$product->set_catalog_visibility($visibility);
 				
-
 				// store the image ID in a var
-				$image_url = 'https://chang-in.fr/wp-content/uploads/2021/03/imprimante-1.png';
+				$image_url = 'https://net-impression.click/wp-content/uploads/2021/03/imprimante.png';
 				$image_id = pippin_get_image_id($image_url);
 				$product->set_image_id($image_id);
 				$product->save();
@@ -281,12 +299,12 @@ if (!function_exists('wfu_after_upload_handler'))
 				
 					// DIV POUR LES INFOS DU PDF
 					var newDivFile = document.createElement('div');
-					newDivFile.innerHTML = 'PDF-METADATAS : <br/><br/>$infosPdf';
+					newDivFile.innerHTML = 'Votre fichier : <br/><br/>$infosPdf';
 					currentPdfDiv.appendChild(newDivFile);
 					
 					// DIV POUR LES DONNEES UTILISATEURS
 					var newDivDatas = document.createElement('div');
-					newDivDatas.innerHTML = '<br/><br/>DATAS-USER : <br/><br/>$infosDatas<br/>$pasImpression';
+					newDivDatas.innerHTML = '<br/><br/>Vos paramètres : <br/><br/>$infosDatas<br/>';
 					currentDatasDiv.appendChild(newDivDatas);
 					
 				";
@@ -313,7 +331,7 @@ if (!function_exists('wfu_after_upload_handler'))
 					var newDivError = document.createElement('div');  
 					// form.setAttribute('style','color:red;');
 					newDivError.innerHTML = '$pasImpression<br/>';
-					currentPrixDiv.appendChild(newDivError);
+					currentPdfDiv.appendChild(newDivError);
 				";
 			}
 			
