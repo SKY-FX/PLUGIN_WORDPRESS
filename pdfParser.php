@@ -114,9 +114,10 @@ if (!function_exists('wfu_after_upload_handler'))
 			
 			// Pour les reliures "dos carré collé" : pas d'impression en dessous de 50 feuilles
 			$pasImpression = "";
-			if ( $ReliureUser=="Dos-carré-collé" && $nbPagesPDF<="250") {$pasImpression = "Minimum 250 feuilles pour imprimer avec une reliure en dos-carré-collé !";}
-			else if ( $ReliureUser=="Métal" && $nbPagesPDF<="120") {$pasImpression = "Minimum 120 feuilles pour imprimer avec une reliure en métal !";}
-			else if ( $ReliureUser=="Plastique" && $nbPagesPDF<="350") {$pasImpression = "Minimum 350 feuilles pour imprimer avec une reliure en plastique !";}
+			if ( $ReliureUser=="Dos-carré-collé" && $nbPagesPDF>"250") {$pasImpression = "Maximum 250 feuilles pour imprimer avec une reliure en dos-carré-collé !";}
+			else if ( $ReliureUser=="Dos-carré-collé" && $nbPagesPDF<"50") {$pasImpression = "Minimum 50 feuilles pour imprimer avec une reliure en dos-carré-collé !";}
+			else if ( $ReliureUser=="Métal" && $nbPagesPDF>"120") {$pasImpression = "Maximum 120 feuilles pour imprimer avec une reliure en métal !";}
+			else if ( $ReliureUser=="Plastique" && $nbPagesPDF>"350") {$pasImpression = "Maximum 350 feuilles pour imprimer avec une reliure en plastique !";}
 			
 			if ($pasImpression=="")
 			{
