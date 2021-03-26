@@ -1,12 +1,12 @@
-<div id="pdfAnalyser" style="margin:40px; border:1px solid black; padding:20px; width:50vw; display:flex; align-items: center; flex-direction: column;">
-	<h1>Simulateur de prix</h1>
-	[wordpress_file_upload redirectlink="h1ttps://www.chang-in.fr/boutique" placements="userdata/filename+selectbutton/uploadbutton+message" uploadtitle="Analyseur de PDF" selectbutton="Sélectionnez un PDF" uploadbutton="Lancer la simulation" widths="filename:200px, selectbutton:200px, uploadbutton:200px, userdata_label:200px, userdata_value:200px" userdata="true" userdatalabel="Format|t:dropdown|s:left|r:1|a:0|p:none|d:A4|l:A4,A3/Impression|t:dropdown|s:left|r:1|a:0|p:none|d:Couleur|l:Couleur, Noir et blanc/Reliure|t:dropdown|s:left|r:1|a:0|p:none|d:Plastique|l:Plastique,Métal,Uniblind,Thermocollé,Dos-carré-collé/Nombre de reliure(s)|t:number|s:left|r:1|a:0|v:1|h:0|p:none|d:1|f:d"]
-	<div id="pdfPrix" style="padding:20px;"></div>
-	<div id="boutton_AddToCart" style="padding:20px;"></div>
+<div id="pdfAnalyser" style="margin:0px; border:0px solid black; padding:20px; width:100%; display:flex; align-items: center; flex-direction: column;">
+    [wordpress_file_upload uploadpatterns="*.pdf" redirectlink="h1ttps://www.chang-in.fr/boutique" placements="userdata/filename+selectbutton/uploadbutton+message" uploadtitle="Analyseur de PDF" selectbutton="Sélectionnez un PDF" uploadbutton="Lancer la simulation" successmessage="En cours de traitement, merci de patienter !" warningmessage="Le fichier %filename% a bien été mis en ligne, mais avec des avertissements, merci de patienter !" errormessage="Le fichier n’a pas été mis en ligne" waitmessage="Le fichier est en cours de mise en ligne" widths="filename:200px, selectbutton:200px, uploadbutton:200px, userdata_label:200px, userdata_value:200px" userdata="true" userdatalabel="Format|t:dropdown|s:left|r:1|a:0|p:none|d:A4|l:A4,A3/Impression|t:dropdown|s:left|r:1|a:0|p:none|d:Couleur|l:Couleur, Noir et blanc/Reliure|t:dropdown|s:left|r:1|a:0|p:none|d:Plastique|l:Plastique,Métal,Thermocollé,Dos-carré-collé,Sans-reliure/Nombre de reliure(s)|t:number|s:left|r:1|a:0|v:1|h:0|p:none|d:1|f:d/Recto-Verso|t:checkbox|s:left|r:0|a:0|p:none|d:|l:|f:right"]
+	<div id="pdfPrix" style="padding:20px; text-align:center;"></div>
+	<div id="boutton_AddToCart" style="padding:20px;">
 </div>
 
-<div style="margin:40px; border:1px solid black; padding:20px; width:50vw;">
-	<h3>Les données de la simulation</h3>
-	<div id="pdfParserInfos"></div>
-	<div id="datasParserInfos"></div>
+
+<div style="margin:0px; border:0px solid black; padding:20px; width:100%;display:flex;align-items: center; flex-direction: column;">
+	<h3>Le résultat</h3>
+	<div id="pdfParserInfos" style="text-align:center;"></div>
+	<div id="datasParserInfos"  style="text-align:center;"></div>
 </div>
