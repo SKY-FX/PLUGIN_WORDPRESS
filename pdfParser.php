@@ -209,15 +209,18 @@ if (!function_exists('wfu_after_upload_handler'))
 				$infosPrix = (float)$prix;
 				$infosPrixUnitaire = (float)$prixUnitaire;
 				//Remise
+				$isRemise = "non";
 				if (floatval($nbReliureUser)>=50)
 				{
 					$infosPrix = (float)$prix*0.8;
-					$infosPrixUnitaire = (float)$prixUnitaire*0.8;
+					//$infosPrixUnitaire = (float)$prixUnitaire*0.8;
+					$isRemise = "oui";
 				}
 				else if (floatval($nbReliureUser)>=10)
 				{
 					$infosPrix = (float)$prix*0.9;
-					$infosPrixUnitaire = (float)$prixUnitaire*0.9;
+					//$infosPrixUnitaire = (float)$prixUnitaire*0.9;
+					$isRemise = "oui";
 				}
 				
 				
@@ -227,7 +230,7 @@ if (!function_exists('wfu_after_upload_handler'))
 				$custom_price = $infosPrixUnitaire;
 				$product = new WC_Product;
 				$product->set_name('IMPRESSION ' . $titrePDF);
-				$product->set_description('NomPdf : ' . $titrePDF . ',<br/>Format : ' . $FormatUser . ',<br/>Impression : ' . $ImpressionUser . ',<br/>Reliure : ' . $ReliureUser . ',<br/>nbPages : ' . $nbPagesPDF . ',<br/>nbReliures : ' . $nbReliureUser . ',<br/>Recto-Verso : ' . $rectoVerso . ',<br/>Poids du document : ' . $poidsDoc . ' grammes' . ',<br/>Prix par reliure : ' . $custom_price . '€');
+				$product->set_description('NomPdf : ' . $titrePDF . ',<br/>Format : ' . $FormatUser . ',<br/>Impression : ' . $ImpressionUser . ',<br/>Reliure : ' . $ReliureUser . ',<br/>nbPages : ' . $nbPagesPDF . ',<br/>nbExemplaires : ' . $nbReliureUser . ',<br/>Recto-Verso : ' . $rectoVerso . ',<br/>Poids du document : ' . $poidsDoc . ' grammes' . ',<br/>Prix par reliure : ' . $custom_price . '€,<br/>Réduction de 10% à partir de 10 reliures !<br/>Réduction de 20% à partir de 50 reliures !');
 				$product->set_regular_price($custom_price);
 				$visibility = 'hidden';
 				$product->set_catalog_visibility($visibility);
@@ -270,6 +273,7 @@ if (!function_exists('wfu_after_upload_handler'))
 				// ######## RENVOIE LES DONNEES A AFFICHER : UTILISE LE JAVASCRIPT
 				// ########
 				
+				$nbImpression = floatval($nbReliureUser);
 				$changable_data["js_script"] = "
 					
 					// Récupère toutes les div dans lesquels on va afficher nos resultats
@@ -303,9 +307,23 @@ if (!function_exists('wfu_after_upload_handler'))
 					currentBtnDiv.appendChild(form);
 				
 					// DIV POUR LE PRIX
-					var newDivPrix = document.createElement('div');  
-					// newDivPrix.innerHTML = 'Prix pour imprimer un PDF (prix par unité) : <b>$infosPrixUnitaire €</b><br/>Prix total (pour $nbReliureUser reliure(s)) : <b>$infosPrix €</b><br/>Nombre de couleur(s) par page : <br/>$test';
-					newDivPrix.innerHTML = 'Prix pour imprimer un PDF (prix par unité) : <b>$infosPrixUnitaire €</b><br/>Prix total (pour $nbReliureUser reliure(s)) : <b>$infosPrix €</b>';
+					var newDivPrix = document.createElement('div');
+					if ($nbImpression == 1)
+					{
+						newDivPrix.innerHTML = 'Prix total pour imprimer $nbReliureUser PDF : <b>$infosPrix €</b>';
+					}
+					else if ($nbImpression < 10)
+					{
+						newDivPrix.innerHTML = 'Prix pour imprimer un PDF (prix par unité) : <b>$infosPrixUnitaire €</b><br/>Prix total pour $nbReliureUser PDF : <b>$infosPrix €</b>';
+					}
+					else if ($nbImpression < 50)
+					{
+						newDivPrix.innerHTML = 'Prix pour imprimer un PDF (prix par unité) : <b>$infosPrixUnitaire €</b><br/>Prix total pour $nbReliureUser PDF : <b>$infosPrix € (remise de 10%)</b>';
+					}
+					else
+					{
+						newDivPrix.innerHTML = 'Prix pour imprimer un PDF (prix par unité) : <b>$infosPrixUnitaire €</b><br/>Prix total pour $nbReliureUser PDF : <b>$infosPrix € (remise de 20%)</b>';
+					}
 					currentPrixDiv.appendChild(newDivPrix);
 				
 					// DIV POUR LES INFOS DU PDF
