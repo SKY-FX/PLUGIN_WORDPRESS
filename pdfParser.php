@@ -40,6 +40,7 @@ if (!function_exists('wfu_after_upload_handler'))
 			$nbReliureUser  = "";
 			$rectoVerso  = "non";
 			$infosPrix = "";
+			$poidsDoc = 0;
 			
 			// ########
 			// ######## METADATA du PDF
@@ -102,6 +103,7 @@ if (!function_exists('wfu_after_upload_handler'))
 				$infosDatas .= $label . ' : ' . $value . ' <br/>';
 				array_push($infosPdfTab, $value);
 			}
+			
 			$FormatUser  = $infosPdfTab[0];
 			$ImpressionUser  = $infosPdfTab[1];
 			$ReliureUser  = $infosPdfTab[2];
@@ -111,8 +113,13 @@ if (!function_exists('wfu_after_upload_handler'))
 				$rectoVerso  = "Oui";
 			}
 			
+			// On ajoute aussi le poids de chaque document à imprimer (5g par feuille en A4 et 10g pour du A3)
+			if ($FormatUser=="A4") {$poidsDoc = 5 * floatval($nbPagesPDF);}
+			else if ($FormatUser=="A3") {$poidsDoc = 10 * floatval($nbPagesPDF);} 
+			$infosDatas .= 'Poids (g) du document : ' . $poidsDoc . ' <br/>';
 			
-			// Pour les reliures "dos carré collé" : pas d'impression en dessous de 50 feuilles
+			
+			// Pas d'impression en dessous de N feuilles
 			$pasImpression = "";
 			if ( $ReliureUser=="Dos-carré-collé" && $nbPagesPDF>"250") {$pasImpression = "Maximum 250 feuilles pour imprimer avec une reliure en dos-carré-collé !";}
 			else if ( $ReliureUser=="Dos-carré-collé" && $nbPagesPDF<"50") {$pasImpression = "Minimum 50 feuilles pour imprimer avec une reliure en dos-carré-collé !";}
@@ -202,12 +209,12 @@ if (!function_exists('wfu_after_upload_handler'))
 				$infosPrix = (float)$prix;
 				$infosPrixUnitaire = (float)$prixUnitaire;
 				//Remise
-				if (floatval($nbReliureUser)>50)
+				if (floatval($nbReliureUser)>=50)
 				{
 					$infosPrix = (float)$prix*0.8;
 					$infosPrixUnitaire = (float)$prixUnitaire*0.8;
 				}
-				else if (floatval($nbReliureUser)>10)
+				else if (floatval($nbReliureUser)>=10)
 				{
 					$infosPrix = (float)$prix*0.9;
 					$infosPrixUnitaire = (float)$prixUnitaire*0.9;
@@ -220,10 +227,12 @@ if (!function_exists('wfu_after_upload_handler'))
 				$custom_price = $infosPrixUnitaire;
 				$product = new WC_Product;
 				$product->set_name('IMPRESSION ' . $titrePDF);
-				$product->set_description('NomPdf : ' . $titrePDF . ',<br/>Format : ' . $FormatUser . ',<br/>Impression : ' . $ImpressionUser . ',<br/>Reliure : ' . $ReliureUser . ',<br/>nbPages : ' . $nbPagesPDF . ',<br/>nbReliures : ' . $nbReliureUser . ',<br/>Recto-Verso : ' . $rectoVerso . ',<br/>Prix par reliure : ' . $custom_price . '€');
+				$product->set_description('NomPdf : ' . $titrePDF . ',<br/>Format : ' . $FormatUser . ',<br/>Impression : ' . $ImpressionUser . ',<br/>Reliure : ' . $ReliureUser . ',<br/>nbPages : ' . $nbPagesPDF . ',<br/>nbReliures : ' . $nbReliureUser . ',<br/>Recto-Verso : ' . $rectoVerso . ',<br/>Poids du document : ' . $poidsDoc . ' grammes' . ',<br/>Prix par reliure : ' . $custom_price . '€');
 				$product->set_regular_price($custom_price);
 				$visibility = 'hidden';
 				$product->set_catalog_visibility($visibility);
+				$poidsGrammes = $poidsDoc/1000;
+				$product->set_weight($poidsGrammes);
 				
 				// store the image ID in a var
 				$image_url = 'https://net-impression.click/wp-content/uploads/2021/03/imprimante.png';
