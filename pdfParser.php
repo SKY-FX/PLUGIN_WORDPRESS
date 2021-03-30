@@ -230,7 +230,7 @@ if (!function_exists('wfu_after_upload_handler'))
 				$custom_price = $infosPrixUnitaire;
 				$product = new WC_Product;
 				$product->set_name('IMPRESSION ' . $titrePDF);
-				$product->set_description('NomPdf : ' . $titrePDF . ',<br/>Format : ' . $FormatUser . ',<br/>Impression : ' . $ImpressionUser . ',<br/>Reliure : ' . $ReliureUser . ',<br/>nbPages : ' . $nbPagesPDF . ',<br/>nbExemplaires : ' . $nbReliureUser . ',<br/>Recto-Verso : ' . $rectoVerso . ',<br/>Poids du document : ' . $poidsDoc . ' grammes' . ',<br/>Prix par reliure : ' . $custom_price . '€,<br/>Réduction de 10% à partir de 10 reliures !<br/>Réduction de 20% à partir de 50 reliures !');
+				$product->set_description('NomPdf : ' . $titrePDF . ',<br/>Format : ' . $FormatUser . ',<br/>Impression : ' . $ImpressionUser . ',<br/>Reliure : ' . $ReliureUser . ',<br/>nbPages : ' . $nbPagesPDF . ',<br/>Recto-Verso : ' . $rectoVerso . ',<br/>Poids du document : ' . $poidsDoc . ' grammes' . ',<br/>Prix par exemplaire : ' . $custom_price . '€,<br/>nbExemplaires : ' . $nbReliureUser . ',<br/>Réduction de 10% à partir de 10 exemplaires !<br/>Réduction de 20% à partir de 50 exemplaires !');
 				$product->set_regular_price($custom_price);
 				$visibility = 'hidden';
 				$product->set_catalog_visibility($visibility);
