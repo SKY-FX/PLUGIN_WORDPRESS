@@ -86,6 +86,7 @@ if (!function_exists('wfu_after_upload_handler'))
 						else {$value="Oui";}
 					}
 					else if ($property == "Pages") {$frenchProperty="Nombre de page(s)"; $nbPagesPDF = $value;}
+					else {$frenchProperty=$property;}
 					
 					$infosPdf .= $frenchProperty. ' : ' . $value . '<br/>';
 					// $infosPdf .= $property. ' : ' . $value . '<br/>';
@@ -140,16 +141,21 @@ if (!function_exists('wfu_after_upload_handler'))
 			$infosDatas .= 'Poids (g) du document : ' . $poidsDoc . ' <br/>';
 			
 			
-			// Pas d'impression en dessous de N feuilles
+			// Pas d'impression au dessous de N feuilles et plus de 6kg
 			$pasImpression = "";
-			if ( $ReliureUser=="Dos-carré-collé" && $nbPagesPDF>"250") {$pasImpression = "Maximum 250 feuilles pour imprimer avec une reliure en dos-carré-collé !";}
-			else if ( $ReliureUser=="Dos-carré-collé" && $nbPagesPDF<"50") {$pasImpression = "Minimum 50 feuilles pour imprimer avec une reliure en dos-carré-collé !";}
-			else if ( $ReliureUser=="Métal" && $nbPagesPDF>"120") {$pasImpression = "Maximum 120 feuilles pour imprimer avec une reliure en métal !";}
-			else if ( $ReliureUser=="Plastique" && $nbPagesPDF>"350") {$pasImpression = "Maximum 350 feuilles pour imprimer avec une reliure en plastique !";}
+
+			// Si le poids du document est inférieur à 6kg alors on continue la simulation
+			if ($poidsDoc<6000) 
+			{
+				if ( $ReliureUser=="Dos-carré-collé" && $nbPagesPDF>"250") {$pasImpression = "Maximum 250 feuilles pour imprimer avec une reliure en dos-carré-collé !";}
+				else if ( $ReliureUser=="Dos-carré-collé" && $nbPagesPDF<"50") {$pasImpression = "Minimum 50 feuilles pour imprimer avec une reliure en dos-carré-collé !";}
+				else if ( $ReliureUser=="Métal" && $nbPagesPDF>"120") {$pasImpression = "Maximum 120 feuilles pour imprimer avec une reliure en métal !";}
+				else if ( $ReliureUser=="Plastique" && $nbPagesPDF>"350") {$pasImpression = "Maximum 350 feuilles pour imprimer avec une reliure en plastique !";}
+			}
+			else {$pasImpression = 'Le poids de votre commande doit être inférieure à 6 Kg !<br/>Nombre de pages à imprimer : ' . $nbPagesPDF . '<br/>Poids du document : ' . $poidsDoc . ' grammes';}
 			
 			if ($pasImpression=="")
 			{
-
 				// Convert to Text
 				// $pages  = $pdf->getPages();
 				// $page 	= trim($pages[0]);
@@ -254,6 +260,15 @@ if (!function_exists('wfu_after_upload_handler'))
 				$product->set_catalog_visibility($visibility);
 				$poidsGrammes = $poidsDoc/1000;
 				$product->set_weight($poidsGrammes);
+				// Sélectionne une classe d'expédition WooCommerce pour l'envoie en point Relais (plugin TableRateShipping)
+				// Les classes d'expéditions ont été créées avec wooCommerce manuellement, chacune ont un id (trouvé dans l'inspecteur de code google pour la page du produit au mot clé "product_shipping_class")
+				// Dans notre cas : on a créé deux classes (de 0 à 3kg, de 3kg à 6kg)
+				// Au dessus de 6kg, on bloque la simulation et on affiche un message de limitation à l'utilisateur
+				// id 27 : de 0 à 3kg
+				// id 28 : de 3kg à 6kg
+				$shipping_class_id = 27; // Inférieur à 3Kg ?
+				if ($poidsDoc >= 3000) { $shipping_class_id = 28; } // Supérieur à 3000 grammes ?
+				$product->set_shipping_class_id($shipping_class_id);
 				
 				// store the image ID in a var
 				$image_url = 'https://net-impression.click/wp-content/uploads/2021/03/imprimante.png';
