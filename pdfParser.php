@@ -63,15 +63,23 @@ if (!function_exists('wfu_after_upload_handler'))
 			$details  = $pdf->getDetails();
 		
 			// Récupère les METADONNEES (string or array) qui nous intersse (titre, nbPage).
-			$infosPdf = 'PDFname : ' . $titrePDF . '<br/>';
+			$infosPdf = 'Nom du PDF : ' . $titrePDF . '<br/>';
 			foreach ($details as $property => $value) {
 				if (is_array($value)) { $value = implode(', ', $value); }
 				
+				$frenchProperty = "";
 				if ($value) 
 				{ 
-					$infosPdf .= $property. ' : ' . $value . '<br/>'; 
-					// if ($property == "Title") {$titrePDF = $value;} 
-					if ($property == "Pages") {$nbPagesPDF = $value;} 
+					// Traduction des propriétés anglaise en Française
+					if ($property == "CreationDate") {$frenchProperty="Date de création";}
+					else if ($property == "Author") {$frenchProperty="Auteur";}
+					else if ($property == "Creator") {$frenchProperty="Créateur";}
+					else if ($property == "Title") {$frenchProperty="Titre";}
+					else if ($property == "Producer") {$frenchProperty="Producteur";}
+					else if ($property == "Pages") {$frenchProperty="Nombre de page(s)"; $nbPagesPDF = $value;}
+					
+					$infosPdf .= $frenchProperty. ' : ' . $value . '<br/>';
+					// $infosPdf .= $property. ' : ' . $value . '<br/>';
 				}
 			}
 			
