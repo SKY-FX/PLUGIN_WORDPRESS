@@ -71,11 +71,20 @@ if (!function_exists('wfu_after_upload_handler'))
 				if ($value) 
 				{ 
 					// Traduction des propriétés anglaise en Française
-					if ($property == "CreationDate") {$frenchProperty="Date de création";}
-					else if ($property == "Author") {$frenchProperty="Auteur";}
+					if ($property == "Author") {$frenchProperty="Auteur";}
+					else if ($property == "CreationDate") {$frenchProperty="Date de création";}
 					else if ($property == "Creator") {$frenchProperty="Créateur";}
-					else if ($property == "Title") {$frenchProperty="Titre";}
+					else if ($property == "Keywords") {$frenchProperty="Mots clés";}
+					else if ($property == "ModDate") {$frenchProperty="Date de modification";}
 					else if ($property == "Producer") {$frenchProperty="Producteur";}
+					else if ($property == "Subject") {$frenchProperty="Sujet";}
+					else if ($property == "Title") {$frenchProperty="Titre";}
+					else if ($property == "Trapped") 
+					{
+						$frenchProperty="Bloqué";
+						if ($value=="false") {$value="Non";}
+						else {$value="Oui";}
+					}
 					else if ($property == "Pages") {$frenchProperty="Nombre de page(s)"; $nbPagesPDF = $value;}
 					
 					$infosPdf .= $frenchProperty. ' : ' . $value . '<br/>';
