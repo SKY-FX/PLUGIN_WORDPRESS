@@ -113,9 +113,13 @@ if (!function_exists('wfu_after_upload_handler'))
 				$rectoVerso  = "Oui";
 			}
 			
-			// On ajoute aussi le poids de chaque document à imprimer (5g par feuille en A4 et 10g pour du A3)
-			if ($FormatUser=="A4") {$poidsDoc = 5 * floatval($nbPagesPDF);}
-			else if ($FormatUser=="A3") {$poidsDoc = 10 * floatval($nbPagesPDF);} 
+			// On ajoute aussi le poids de chaque document à imprimer en fonction du format (A3 ou A4) et de la couleur ou N&B
+			// (5g par feuille en A4 et 10g pour du A3)
+			// (5.61g par feuille en A4 et 11.22g pour du A3)
+			$poidsParFeuille = 5; // Pour du N&B
+			if ($ImpressionUser=="Couleur") {$poidsParFeuille=5.61;} // Pour de la couleur
+			$poidsDoc = $poidsParFeuille * floatval($nbPagesPDF);
+			if ($FormatUser=="A3") {$poidsDoc = 2 * $poidsDoc;} 
 			$infosDatas .= 'Poids (g) du document : ' . $poidsDoc . ' <br/>';
 			
 			
@@ -209,18 +213,15 @@ if (!function_exists('wfu_after_upload_handler'))
 				$infosPrix = (float)$prix;
 				$infosPrixUnitaire = (float)$prixUnitaire;
 				//Remise
-				$isRemise = "non";
 				if (floatval($nbReliureUser)>=50)
 				{
 					$infosPrix = (float)$prix*0.8;
 					//$infosPrixUnitaire = (float)$prixUnitaire*0.8;
-					$isRemise = "oui";
 				}
 				else if (floatval($nbReliureUser)>=10)
 				{
 					$infosPrix = (float)$prix*0.9;
 					//$infosPrixUnitaire = (float)$prixUnitaire*0.9;
-					$isRemise = "oui";
 				}
 				
 				

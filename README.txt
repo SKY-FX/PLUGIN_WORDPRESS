@@ -10,7 +10,7 @@ Utilise le filtre "wfu_after_upload" du plugin "WordPress File Upload" pour lanc
 Il utilise la librairie PDF PARSER php pour extraire les medata du pdf
 Il récupère les données utilisateurs concernant l'impression du PDF
 Il calcul le prix du document imprimé.
-Il calcul aussi le poids total du document (5g par feuille) et du format (A3 ou A4)
+Il calcul aussi le poids total du document (5g par feuille couleur, 5.61g par feuille N&B) et du format (A3 ou A4)
 Des limitations sur la possibilité d'imprimer sont faites en fonction du nombre de feuilles et du type de reliure
 Il créé un produit wooCommerce dans WordPress pour être compatible avec l'ajout au panier de Wordpress
 Affiche le boutton "ajouter au panier" et les données de la simulation quand tout est prêt (JAVASCRIPT)
