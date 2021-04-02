@@ -2,7 +2,7 @@
 /*
 Plugin Name: PARSER PDF
 Plugin URI: https://www.sylvain-chabaud.fr
-Description: Chabaud Sylvain
+Description: Chabaud Sylvain - Custom pdf printing plugin 
 Version: 1.0
 Author URI: https://www.sylvain-chabaud.fr
 */
@@ -136,10 +136,9 @@ if (!function_exists('wfu_after_upload_handler'))
 			// (5.61g par feuille en A4 et 11.22g pour du A3)
 			$poidsParFeuille = 5; // Pour du N&B
 			if ($ImpressionUser=="Couleur") {$poidsParFeuille=5.61;} // Pour de la couleur
-			$poidsDoc = $poidsParFeuille * floatval($nbPagesPDF);
+			$poidsDoc = $poidsParFeuille * floatval($nbPagesPDF) * $nbReliureUser;
 			if ($FormatUser=="A3") {$poidsDoc = 2 * $poidsDoc;} 
-			$infosDatas .= 'Poids (g) du document : ' . $poidsDoc . ' <br/>';
-			
+			$infosDatas .= 'Poids de la livraison (pour ' . $nbReliureUser . ' PDF) : ' . $poidsDoc . ' grammes<br/>';
 			
 			// Pas d'impression au dessous de N feuilles et plus de 6kg
 			$pasImpression = "";
@@ -152,7 +151,7 @@ if (!function_exists('wfu_after_upload_handler'))
 				else if ( $ReliureUser=="Métal" && $nbPagesPDF>"120") {$pasImpression = "Maximum 120 feuilles pour imprimer avec une reliure en métal !";}
 				else if ( $ReliureUser=="Plastique" && $nbPagesPDF>"350") {$pasImpression = "Maximum 350 feuilles pour imprimer avec une reliure en plastique !";}
 			}
-			else {$pasImpression = 'Le poids de votre commande doit être inférieure à 6 Kg !<br/>Nombre de pages à imprimer : ' . $nbPagesPDF . '<br/>Poids du document : ' . $poidsDoc . ' grammes';}
+			else {$pasImpression = 'Le poids de votre commande doit être inférieure à 6 Kg !<br/>Nombre de pages à imprimer : ' . $nbPagesPDF . '<br/>Poids de la livraison : ' . $poidsDoc . ' grammes';}
 			
 			if ($pasImpression=="")
 			{
@@ -211,11 +210,21 @@ if (!function_exists('wfu_after_upload_handler'))
 				// total_prix = prix_reliure*nbReliureUser + prix_impression*nbPagesPDF
 				// prix reliure : fonction de reliure, reliure et du format
 				// prix impression : fonction de nbfeuilles, et format
-				// un pourcentage est appliqué après le calcul du total pour prendre en compte la remise en fonction du nombre de reliure
+				// un pourcentage est appliqué pour prendre en compte la remise sur le prix de la reliure
 				
 				// Prix reliure
 				$prix_reliure = floatval($reliureTab[$ReliureUser][$label_reliure]);
 				if ($FormatUser=="A3") $prix_reliure += floatval(1);
+				
+				//Remise sur le prix de la reliure
+				if (floatval($nbReliureUser)>50)
+				{
+					$prix_reliure = (float)$prix_reliure*0.8;
+				}
+				else if (floatval($nbReliureUser)>10)
+				{
+					$prix_reliure = (float)$prix_reliure*0.9;
+				}
 				
 				
 				// Prix impression
@@ -230,22 +239,10 @@ if (!function_exists('wfu_after_upload_handler'))
 				
 				
 				// Fait la somme des deux prix (impression et reliure)
-				// + Remise sur le nombre de reliure
 				$prix = $prix_reliure*floatval($nbReliureUser) + $prix_impression*floatval($nbPagesPDF)*floatval($nbReliureUser);
 				$prixUnitaire = $prix_reliure + $prix_impression*floatval($nbPagesPDF);
 				$infosPrix = (float)$prix;
 				$infosPrixUnitaire = (float)$prixUnitaire;
-				//Remise
-				if (floatval($nbReliureUser)>=50)
-				{
-					$infosPrix = (float)$prix*0.8;
-					//$infosPrixUnitaire = (float)$prixUnitaire*0.8;
-				}
-				else if (floatval($nbReliureUser)>=10)
-				{
-					$infosPrix = (float)$prix*0.9;
-					//$infosPrixUnitaire = (float)$prixUnitaire*0.9;
-				}
 				
 				
 				// ########
@@ -254,11 +251,11 @@ if (!function_exists('wfu_after_upload_handler'))
 				$custom_price = $infosPrixUnitaire;
 				$product = new WC_Product;
 				$product->set_name('IMPRESSION ' . $titrePDF);
-				$product->set_description('NomPdf : ' . $titrePDF . ',<br/>Format : ' . $FormatUser . ',<br/>Impression : ' . $ImpressionUser . ',<br/>Reliure : ' . $ReliureUser . ',<br/>nbPages : ' . $nbPagesPDF . ',<br/>Recto-Verso : ' . $rectoVerso . ',<br/>Poids du document : ' . $poidsDoc . ' grammes' . ',<br/>Prix par exemplaire : ' . $custom_price . '€,<br/>nbExemplaires : ' . $nbReliureUser . ',<br/>Réduction de 10% à partir de 10 exemplaires !<br/>Réduction de 20% à partir de 50 exemplaires !');
+				$product->set_description('NomPdf : ' . $titrePDF . ',<br/>Format : ' . $FormatUser . ',<br/>Impression : ' . $ImpressionUser . ',<br/>Reliure : ' . $ReliureUser . ',<br/>nbPages : ' . $nbPagesPDF . ',<br/>Recto-Verso : ' . $rectoVerso . ',<br/>Poids de la livraison : ' . $poidsDoc . ' grammes' . ',<br/>Prix par exemplaire : ' . $custom_price . '€,<br/>nbExemplaires : ' . $nbReliureUser . ',<br/>Remise de 10% sur les reliures à partir de 10 reliures !<br/>Remise de 20% sur les reliures à partir de 50 reliures !');
 				$product->set_regular_price($custom_price);
 				$visibility = 'hidden';
 				$product->set_catalog_visibility($visibility);
-				$poidsGrammes = $poidsDoc/1000;
+				$poidsGrammes = ($poidsParFeuille * floatval($nbPagesPDF))/1000;
 				$product->set_weight($poidsGrammes);
 				// Sélectionne une classe d'expédition WooCommerce pour l'envoie en point Relais (plugin TableRateShipping)
 				// Les classes d'expéditions ont été créées avec wooCommerce manuellement, chacune ont un id (trouvé dans l'inspecteur de code google pour la page du produit au mot clé "product_shipping_class")
@@ -266,8 +263,8 @@ if (!function_exists('wfu_after_upload_handler'))
 				// Au dessus de 6kg, on bloque la simulation et on affiche un message de limitation à l'utilisateur
 				// id 27 : de 0 à 3kg
 				// id 28 : de 3kg à 6kg
-				$shipping_class_id = 27; // Inférieur à 3Kg ?
-				if ($poidsDoc >= 3000) { $shipping_class_id = 28; } // Supérieur à 3000 grammes ?
+				$shipping_class_id = 27; // Si le poids total est Inférieur à 3Kg ?
+				if ( ($poidsGrammes) >= 3000) { $shipping_class_id = 28; } // Supérieur à 3000 grammes ?
 				$product->set_shipping_class_id($shipping_class_id);
 				
 				// store the image ID in a var
@@ -334,8 +331,8 @@ if (!function_exists('wfu_after_upload_handler'))
 					btn.setAttribute('style', 'padding:20px; backgroundColor:#ef7d00;');
 					var form = document.createElement('form');
 					form.setAttribute('method','post');
-					// form.setAttribute('action','https://chang-in.fr/?add-to-cart=$pdfProductId');
-					form.setAttribute('action','$permalink');
+					form.setAttribute('action','https://net-impression.click/commander/?add-to-cart=$pdfProductId&quantity=$nbReliureUser');
+					// form.setAttribute('action','$permalink');
 					form.appendChild(btn);
 					currentBtnDiv.appendChild(form);
 				
@@ -351,11 +348,11 @@ if (!function_exists('wfu_after_upload_handler'))
 					}
 					else if ($nbImpression < 50)
 					{
-						newDivPrix.innerHTML = 'Prix pour imprimer un PDF (prix par unité) : <b>$infosPrixUnitaire €</b><br/>Prix total pour $nbReliureUser PDF : <b>$infosPrix € (remise de 10%)</b>';
+						newDivPrix.innerHTML = 'Prix pour imprimer un PDF (prix par unité) : <b>$infosPrixUnitaire €</b><br/>Prix total pour $nbReliureUser PDF : <b>$infosPrix € (remise de 10% sur les reliures)</b>';
 					}
 					else
 					{
-						newDivPrix.innerHTML = 'Prix pour imprimer un PDF (prix par unité) : <b>$infosPrixUnitaire €</b><br/>Prix total pour $nbReliureUser PDF : <b>$infosPrix € (remise de 20%)</b>';
+						newDivPrix.innerHTML = 'Prix pour imprimer un PDF (prix par unité) : <b>$infosPrixUnitaire €</b><br/>Prix total pour $nbReliureUser PDF : <b>$infosPrix € (remise de 20% sur les reliures)</b>';
 					}
 					currentPrixDiv.appendChild(newDivPrix);
 				
